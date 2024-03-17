@@ -1,0 +1,94 @@
+// C++ code
+//
+#include <Servo.h>
+#include<SevSeg.h>
+Servo servo_direction ;
+SevSeg boatseg;
+ 
+int x_key = A1; // analog pin for x-axis
+int x_val = 0;  // defines x value from joystick
+int y_key = A2;
+int y_val = 0;
+int servo_direction_pin = 9;   //digital pin for servo
+int initial_position = 90; // initial position of the servo
+int brightness = 0;
+
+int Button = 0;
+
+
+
+
+void setup()
+{
+  pinMode(3, OUTPUT);
+  
+  Serial.begin(9600);                           //data speed
+  servo_direction.attach(servo_direction_pin);        // Pin 9 for servo
+  servo_direction.write(initial_position);        // servo starts at 90 degrees
+  pinMode(x_key, INPUT); 
+  pinMode(y_key,INPUT);// Horizontal pin is the input
+  pinMode(servo_direction_pin, OUTPUT);           // servo is the output
+
+  pinMode (6, OUTPUT); //white
+  pinMode (7, OUTPUT); // red
+    byte numDigits = 1;    // 1 digit display
+    byte digitPins[] = {};
+    byte segmentPins[] = {12, 11, 2, 4, 5, 10, 8, 13}; // A-2, B-4, C-5, D-8, E-10, F-11, G-12, DP-13
+    bool resistorsOnSegments = true;               // Resistors in series with segment pins
+
+    byte hardwareConfig = COMMON_CATHODE;   // common cathode display
+    boatseg.begin(hardwareConfig, numDigits, digitPins, segmentPins, resistorsOnSegments);
+    boatseg.setBrightness(99);    // brightness set to 99
+
+
+}
+
+void loop()
+{
+   for(int i=9; i<10; i--){    //for numbers between 0 and less than 10
+      boatseg.setNumber(i,i%2);   //set number to i
+      if(i>1){
+        delay(1000);               // set delay between each integer
+      }
+      boatseg.refreshDisplay();
+
+      if(i<1){
+       int y_val = analogRead(y_key);
+ int x_val = analogRead(x_key);
+ if (x_val < 300) {
+   digitalWrite(3,HIGH);
+   delay(50);
+   
+ }
+ else{
+   digitalWrite(3,LOW);
+ }
+  if (y_val < 300) { //If position is less than 300
+    initial_position = initial_position + 5; //increase position by 20
+    servo_direction.write(initial_position);  // copy to servo
+    delay(50); //time between steps
+    digitalWrite(6, HIGH); //white on
+
+  }
+  else {
+    digitalWrite(6, LOW); //white off
+
+    }
+    if (y_val > 700) { //If position is greater than 700
+    initial_position = initial_position - 5; //decrease by 20
+    servo_direction.write(initial_position); //copy to servo
+    delay(50); //time between steps
+    digitalWrite(7, HIGH); //red on
+  }
+
+else {
+  digitalWrite(7,LOW); //red off
+
+  }
+
+ 
+  delay(10); // Delay a little bit to improve simulation performance
+}
+
+      }
+      }
